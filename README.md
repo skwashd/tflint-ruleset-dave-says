@@ -12,6 +12,7 @@ A TFLint plugin that enforces custom Terraform coding standards for consistent n
 * **[dave_resource_name_no_type_substring](#dave_resource_name_no_type_substring):** Avoid redundant information in resource names
 * **[dave_variable_alphabetical_order](#dave_variable_alphabetical_order):** Sort variables alphabetically
 * **[dave_variable_must_be_in_variables_file](#dave_variable_must_be_in_variables_file):** Only allow variables in variable.tf
+* **[dave_variable_region][#dave_variable_region]:** Don't allow region as a variable
 
 ## Installation
 
@@ -198,6 +199,21 @@ variable "beta" {}
 variable "alpha" {}
 variable "gamma" {}
 ```
+
+#### `dave_variable_region`
+**Purpose**: Prevents use of 'region' as a variable name.
+
+**Examples**:
+```hcl
+# ✅ Valid
+variable "alpha" {}
+variable "beta" {}
+variable "gamma" {}
+
+# ❌ Invalid
+variable "region" {}
+```
+
 
 ### AWS Policy Rules
 

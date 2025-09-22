@@ -20,6 +20,7 @@ func main() {
 				rules.NewDaveResourceNameNoTypeSubstringRule(),
 				rules.NewDaveVariableAlphabeticalOrderRule(),
 				rules.NewDaveVariableMustBeInVariablesFileRule(),
+				rules.NewDaveVariableRegionRule(),
 			},
 		},
 	})
