@@ -18,6 +18,10 @@ func NewDaveLabelSnakeRule() *DaveLabelSnakeRule {
 	}
 }
 
+func (r *DaveLabelSnakeRule) Link() string {
+	return "https://github.com/skwashd/tflint-ruleset-dave-says/blob/main/docs/rules/dave_label_snake.md"
+}
+
 func (r *DaveLabelSnakeRule) Check(runner tflint.Runner) error {
 	content, err := runner.GetModuleContent(&hclext.BodySchema{
 		Blocks: []hclext.BlockSchema{

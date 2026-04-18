@@ -17,6 +17,10 @@ func NewDaveResourceNameNoTypeSubstringRule() *DaveResourceNameNoTypeSubstringRu
 	}
 }
 
+func (r *DaveResourceNameNoTypeSubstringRule) Link() string {
+	return "https://github.com/skwashd/tflint-ruleset-dave-says/blob/main/docs/rules/dave_resource_name_no_type_substring.md"
+}
+
 func (r *DaveResourceNameNoTypeSubstringRule) Check(runner tflint.Runner) error {
 	content, err := runner.GetModuleContent(&hclext.BodySchema{
 		Blocks: []hclext.BlockSchema{

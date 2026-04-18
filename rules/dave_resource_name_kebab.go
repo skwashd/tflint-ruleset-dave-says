@@ -17,6 +17,10 @@ func NewDaveResourceNameKebabRule() *DaveResourceNameKebabRule {
 	}
 }
 
+func (r *DaveResourceNameKebabRule) Link() string {
+	return "https://github.com/skwashd/tflint-ruleset-dave-says/blob/main/docs/rules/dave_resource_name_kebab.md"
+}
+
 func (r *DaveResourceNameKebabRule) Check(runner tflint.Runner) error {
 	content, err := runner.GetModuleContent(&hclext.BodySchema{
 		Blocks: []hclext.BlockSchema{

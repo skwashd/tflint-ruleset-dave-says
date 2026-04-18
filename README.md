@@ -4,22 +4,47 @@ A TFLint plugin that enforces custom Terraform coding standards for consistent n
 
 ## Rules
 
-* **[dave_aws_policy_no_jsonencode](#dave_aws_policy_no_jsonencode):** Ensure policies use aws_iam_policy_documents
-* **[dave_label_min_length](#dave_label_min_length):** Enforce minimum length for labels
-* **[dave_label_no_type_substring](#dave_label_no_type_substring):** Avoid redundant information in label values
-* **[dave_label_snake](#dave_label_snake):** Use snake_case for all labels
-* **[dave_resource_name_kebab](#dave_resource_name_kebab):** Use kebab-case for all names
-* **[dave_resource_name_no_type_substring](#dave_resource_name_no_type_substring):** Avoid redundant information in resource names
-* **[dave_variable_alphabetical_order](#dave_variable_alphabetical_order):** Sort variables alphabetically
-* **[dave_variable_must_be_in_variables_file](#dave_variable_must_be_in_variables_file):** Only allow variables in variable.tf
-* **[dave_variable_region][#dave_variable_region]:** Don't allow region as a variable
+### Label Rules
+* **[dave_label_min_length](docs/rules/dave_label_min_length.md):** Enforce minimum length for labels
+* **[dave_label_no_type_substring](docs/rules/dave_label_no_type_substring.md):** Avoid redundant information in label values
+* **[dave_label_snake](docs/rules/dave_label_snake.md):** Use snake_case for all labels
+
+### Resource Name Rules
+* **[dave_resource_name_kebab](docs/rules/dave_resource_name_kebab.md):** Use kebab-case for all names
+* **[dave_resource_name_no_type_substring](docs/rules/dave_resource_name_no_type_substring.md):** Avoid redundant information in resource names
+
+### Variable Rules
+* **[dave_no_vpc_id_variable](docs/rules/dave_no_vpc_id_variable.md):** Do not use `vpc_id` as a variable name
+* **[dave_variable_alphabetical_order](docs/rules/dave_variable_alphabetical_order.md):** Sort variables alphabetically
+* **[dave_variable_has_description](docs/rules/dave_variable_has_description.md):** All variables must have a `description`
+* **[dave_variable_has_type](docs/rules/dave_variable_has_type.md):** All variables must have a `type`
+* **[dave_variable_must_be_in_variables_file](docs/rules/dave_variable_must_be_in_variables_file.md):** Only allow variables in `variables.tf`
+* **[dave_variable_region](docs/rules/dave_variable_region.md):** Do not use `region` as a variable name
+
+### File Organization Rules
+* **[dave_output_must_be_in_outputs_file](docs/rules/dave_output_must_be_in_outputs_file.md):** Only allow outputs in `outputs.tf`
+
+### AWS IAM Rules
+* **[dave_aws_policy_no_jsonencode](docs/rules/dave_aws_policy_no_jsonencode.md):** Ensure policies use `aws_iam_policy_document` data sources
+* **[dave_iam_no_inline_policy](docs/rules/dave_iam_no_inline_policy.md):** Use managed policies instead of inline policies
+
+### AWS S3 Rules
+* **[dave_s3_bucket_namespace](docs/rules/dave_s3_bucket_namespace.md):** S3 buckets must use account-regional namespace
+* **[dave_s3_no_inline_config](docs/rules/dave_s3_no_inline_config.md):** Do not use deprecated inline S3 configuration blocks
+* **[dave_s3_no_public_acl](docs/rules/dave_s3_no_public_acl.md):** S3 bucket ACLs must not allow public access
+
+### AWS CloudWatch Rules
+* **[dave_cloudwatch_log_retention](docs/rules/dave_cloudwatch_log_retention.md):** CloudWatch log groups must set `retention_in_days`
+
+### AWS VPC Rules
+* **[dave_security_group_no_inline_rules](docs/rules/dave_security_group_no_inline_rules.md):** Do not use inline `ingress`/`egress` blocks on security groups
 
 ## Installation
 
 ### Building from Source
 
 ```bash
-git clone https://github.com/yourusername/tflint-ruleset-dave-says.git
+git clone https://github.com/skwashd/tflint-ruleset-dave-says.git
 cd tflint-ruleset-dave-says
 go build -o tflint-ruleset-dave-says
 ```
@@ -38,258 +63,66 @@ Add to your `.tflint.hcl`:
 ```hcl
 plugin "dave-says" {
   enabled = true
-  version = "0.1.0"
-  source  = "github.com/yourusername/tflint-ruleset-dave-says"
+  version = "0.2.0"
+  source  = "github.com/skwashd/tflint-ruleset-dave-says"
 }
 ```
 
 ### Disabling Individual Rules
 
 ```hcl
-rule "dave_label_min_length" {
+rule "dave_cloudwatch_log_retention" {
   enabled = false
 }
 
-rule "dave_variable_alphabetical_order" {
+rule "dave_s3_bucket_namespace" {
   enabled = false
 }
 ```
 
-## Rule Details
+### Rule Configuration
 
-### Label Rules
+Some rules accept per-rule configuration:
 
-#### `dave_label_snake`
-**Purpose**: Ensure labels use only use snake_case, or lowercase letters, numbers, and underscores.
-
-**Examples**:
 ```hcl
-# ✅ Valid
-
-data "aws_s3_bucket" "existing_storage" {}
-ephemeral "random_password" "db" {}
-module "my_module" { source = "./modules/my_module" }
-output "bucket_name" { value = aws_s3_bucket.user_data.bucket }
-resource "aws_s3_bucket" "storage123" {}
-resource "aws_s3_bucket" "user_data" {}
-variable "storage_name" {}`,
-
-# ❌ Invalid
-
-resource "aws_s3_bucket" "myStorage" {}    # Contains uppercase
-resource "aws_s3_bucket" "user_Data" {}    # Contains uppercase
-resource "aws_s3_bucket" "user-data" {}    # Contains dash
-```
-
-#### `dave_label_min_length`
-**Purpose**: Ensure labels are at least 3 characters long or a well known name.
-
-`db` and `s3` are two commonly used well known names.
-
-**Examples**:
-```hcl
-# ✅ Valid
-
-data "aws_iam_policy_document" "s3" {}
-resource "aws_s3_bucket" "abc" {}
-resource "aws_s3_bucket" "user_data" {}
-
-# ❌ Invalid
-
-resource "aws_s3_bucket" "a" {}  # Too short
-resource "aws_s3_bucket" "yz" {}   # Too short
-```
-
-#### `dave_resource_label_no_type_substring`
-**Purpose**: Prevent labels from containing words that appear in the resource type.
-
-**Examples**:
-```hcl
-# ✅ Valid
-
-resource "aws_s3_bucket" "user_data" {}
-resource "aws_iam_role" "application" {}
-
-# ❌ Invalid
-
-resource "aws_s3_bucket" "user_bucket" {}  # Contains "bucket"
-resource "aws_iam_role" "admin_role" {}    # Contains "role"
-resource "aws_s3_bucket" "s3_storage" {}   # Contains "s3"
-```
-
-### Resource Name Rules
-
-#### `dave_resource_name_no_type_substring`
-**Purpose**: Prevent resource `name` and `name_prefix` attributes from containing words that appear in the resource type.
-
-**Examples**:
-```hcl
-# ✅ Valid
-
-resource "aws_s3_bucket" "main" {
-  name = "my-application-storage"
-}
-
-# ❌ Invalid
-
-resource "aws_s3_bucket" "main" {
-  name = "my-application-bucket"  # Contains "bucket"
-}
-
-resource "aws_iam_role" "main" {
-  name = "admin-role-policy"  # Contains "role"
+rule "dave_cloudwatch_log_retention" {
+  enabled        = true
+  retention_days = 14  # default: 30
 }
 ```
 
-#### `dave_resource_name_kebab`
-**Purpose**: Ensure resource `name` and `name_prefix` attributes use kebab-case, or only lowercase letters, numbers, and dashes.
+| Rule | Option | Type | Default | Description |
+|------|--------|------|---------|-------------|
+| `dave_cloudwatch_log_retention` | `retention_days` | int | `30` | Expected `retention_in_days` value |
 
-**Examples**:
-```hcl
-# ✅ Valid
+## Autofix
 
-resource "aws_s3_bucket" "main" {
-  name = "my-application-storage"
-}
+Some rules support `tflint --fix` to automatically correct issues:
 
-resource "aws_iam_role" "main" {
-  name_prefix = "admin-role-"
-}
+| Rule | Fix action |
+|------|-----------|
+| `dave_cloudwatch_log_retention` | Replaces wrong `retention_in_days` value with the configured expected value |
+| `dave_s3_no_public_acl` | Replaces public ACL (`public-read`, `public-read-write`, `authenticated-read`) with `"private"` |
 
-# ❌ Invalid
-resource "aws_s3_bucket" "main" {
-  name = "my_application_storage"  # Contains underscores
-}
-```
+Autofix only applies when the attribute exists but has the wrong value. Missing attributes are flagged but not auto-fixed to avoid guessing indentation and placement.
 
-### Variable Rules
+Requires TFLint v0.47+.
 
-#### `dave_variable_must_be_in_variables_file`
-**Purpose**: Ensure all variable blocks are declared in `variables.tf` files only.
+## Provider Version Requirements
 
-**Examples**:
-```hcl
-# ✅ Valid
-# variables.tf
-variable "storage_name" {
-  type = string
-}
+Some rules target features that require minimum provider versions:
 
-# ❌ Invalid
-# main.tf or any other file
-variable "storage_name" {
-  type = string
-}
-```
-
-#### `dave_variable_alphabetical_order`
-**Purpose**: Ensure variables are sorted alphabetically by name.
-
-**Examples**:
-```hcl
-# ✅ Valid
- - alphabetical order
-variable "alpha" {}
-variable "beta" {}
-variable "gamma" {}
-
-# ❌ Invalid
- - not alphabetical
-variable "beta" {}
-variable "alpha" {}
-variable "gamma" {}
-```
-
-#### `dave_variable_region`
-**Purpose**: Prevents use of 'region' as a variable name.
-
-**Examples**:
-```hcl
-# ✅ Valid
-variable "alpha" {}
-variable "beta" {}
-variable "gamma" {}
-
-# ❌ Invalid
-variable "region" {}
-```
-
-
-### AWS Policy Rules
-
-#### `dave_aws_policy_no_jsonencode`
-**Purpose**: Ensure AWS IAM policies reference `aws_iam_policy_document` data sources instead of using `jsonencode()`.
-
-**Examples**:
-```hcl
-# ✅ Valid
-
-resource "aws_iam_role" "main" {
-  assume_role_policy = data.aws_iam_policy_document.assume_role.json
-}
-
-# ❌ Invalid
-
-resource "aws_iam_role" "main" {
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [...]
-  })
-}
-
-# ✅ Valid
- - Non-AWS resources can use jsonencode
-resource "kubernetes_config_map" "main" {
-  data = {
-    config = jsonencode({ key = "value" })
-  }
-}
-```
-
-## Usage Examples
-
-### Running TFLint with Dave Says Rules
-
-```bash
-# Run all rules
-tflint
-
-# Run with specific configuration
-tflint --config .tflint.hcl
-
-# Show only warnings from dave-says plugin
-tflint --only=dave_label_snake --only=dave_variable_alphabetical_order
-```
-
-### Example Output
-
-```
-Warning: Variable 'storageVar' is not in alphabetical order (dave_variable_alphabetical_order)
-
-  on test.tf line 23:
-  23: variable "storageVar" {
-
-Warning: Variable name 'storageVar' must contain only lowercase letters, numbers, and underscores (dave_label_snake)
-
-  on test.tf line 23:
-  23: variable "storageVar" {
-
-Warning: Variable 'applicationVar' is not in alphabetical order. Expected position after 'applicationVar' (dave_variable_alphabetical_order)
-
-  on test.tf line 27:
-  27: variable "applicationVar" {
-
-Warning: Variable name 'applicationVar' must contain only lowercase letters, numbers, and underscores (dave_label_snake)
-
-  on test.tf line 27:
-  27: variable "applicationVar" {
-```
+| Rule | Minimum AWS Provider |
+|------|---------------------|
+| `dave_s3_bucket_namespace` | >= 6.37.0 |
+| `dave_s3_no_inline_config` | >= 4.0.0 (deprecated since) |
+| `dave_security_group_no_inline_rules` | >= 5.0.0 |
 
 ## Development
 
 ### Requirements
 
-- Go 1.21 or newer
+- Go 1.23 or newer
 - TFLint v0.59.0 or newer
 
 ### Building

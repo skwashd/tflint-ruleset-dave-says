@@ -17,6 +17,10 @@ func NewDaveVariableRegionRule() *DaveVariableRegionRule {
 	}
 }
 
+func (r *DaveVariableRegionRule) Link() string {
+	return "https://github.com/skwashd/tflint-ruleset-dave-says/blob/main/docs/rules/dave_variable_region.md"
+}
+
 func (r *DaveVariableRegionRule) Check(runner tflint.Runner) error {
 	content, err := runner.GetModuleContent(&hclext.BodySchema{
 		Blocks: []hclext.BlockSchema{

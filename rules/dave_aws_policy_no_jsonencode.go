@@ -20,6 +20,10 @@ func NewDaveAwsPolicyNoJsonencodeRule() *DaveAwsPolicyNoJsonencodeRule {
 	}
 }
 
+func (r *DaveAwsPolicyNoJsonencodeRule) Link() string {
+	return "https://github.com/skwashd/tflint-ruleset-dave-says/blob/main/docs/rules/dave_aws_policy_no_jsonencode.md"
+}
+
 func (r *DaveAwsPolicyNoJsonencodeRule) Check(runner tflint.Runner) error {
 	content, err := runner.GetModuleContent(&hclext.BodySchema{
 		Blocks: []hclext.BlockSchema{
