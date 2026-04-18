@@ -55,6 +55,30 @@ variable "name" {
 	}
 }
 
+func Test_DaveVariableHasType_WithEphemeral(t *testing.T) {
+	rule := NewDaveVariableHasTypeRule()
+
+	runner := helper.TestRunner(t, map[string]string{
+		"variables.tf": `
+variable "target_role_arn" {
+  description = "The ARN of the target role to assume"
+  ephemeral   = true
+
+  type    = string
+  default = "arn:aws:iam::123456789012:role/TerraformPlanner"
+}
+`,
+	})
+
+	if err := rule.Check(runner); err != nil {
+		t.Fatalf("unexpected error: %s", err)
+	}
+
+	if len(runner.Issues) != 0 {
+		t.Errorf("expected no issues, got %d", len(runner.Issues))
+	}
+}
+
 func Test_DaveVariableHasType_MixedPresence(t *testing.T) {
 	rule := NewDaveVariableHasTypeRule()
 

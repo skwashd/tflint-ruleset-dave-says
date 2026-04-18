@@ -3,7 +3,7 @@ package rules
 import (
 	"fmt"
 
-	"github.com/terraform-linters/tflint-plugin-sdk/hclext"
+	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 )
 
@@ -23,31 +23,37 @@ func (r *DaveVariableHasTypeRule) Link() string {
 }
 
 func (r *DaveVariableHasTypeRule) Check(runner tflint.Runner) error {
-	content, err := runner.GetModuleContent(&hclext.BodySchema{
-		Blocks: []hclext.BlockSchema{
-			{
-				Type:       "variable",
-				LabelNames: []string{"name"},
-				Body: &hclext.BodySchema{
-					Attributes: []hclext.AttributeSchema{
-						{Name: "type"},
-					},
-				},
-			},
-		},
-	}, nil)
+	files, err := runner.GetFiles()
 	if err != nil {
 		return err
 	}
 
-	for _, block := range content.Blocks {
-		_, exists := block.Body.Attributes["type"]
-		if !exists {
-			if err := EmitIssue(runner, r,
-				fmt.Sprintf("Variable %q is missing a type constraint. Without one, Terraform cannot catch invalid inputs at plan time.", block.Labels[0]),
-				block.DefRange,
-			); err != nil {
-				return err
+	for _, file := range files {
+		body, ok := file.Body.(*hclsyntax.Body)
+		if !ok {
+			continue
+		}
+
+		for _, block := range body.Blocks {
+			if block.Type != "variable" || len(block.Labels) == 0 {
+				continue
+			}
+
+			hasType := false
+			for _, attr := range block.Body.Attributes {
+				if attr.Name == "type" {
+					hasType = true
+					break
+				}
+			}
+
+			if !hasType {
+				if err := EmitIssue(runner, r,
+					fmt.Sprintf("Variable %q is missing a type constraint. Without one, Terraform cannot catch invalid inputs at plan time.", block.Labels[0]),
+					block.DefRange(),
+				); err != nil {
+					return err
+				}
 			}
 		}
 	}
