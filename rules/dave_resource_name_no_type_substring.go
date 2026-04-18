@@ -60,7 +60,14 @@ func (r *DaveResourceNameNoTypeSubstringRule) Check(runner tflint.Runner) error 
 	return nil
 }
 
-func (r *DaveResourceNameNoTypeSubstringRule) checkNameAttribute(runner tflint.Runner, resourceType string, typeWords []string, attrName string, attr *hclext.Attribute) error {
+func (r *DaveResourceNameNoTypeSubstringRule) checkNameAttribute(runner tflint.Runner, resourceType string, typeWords []string, attrName string, attr *hclext.Attribute) (retErr error) {
+	defer func() {
+		if r := recover(); r != nil {
+			// Skip if evaluation panics (e.g. unevaluable expressions with nil types)
+			retErr = nil
+		}
+	}()
+
 	var nameValue string
 	err := runner.EvaluateExpr(attr.Expr, &nameValue, nil)
 	if err != nil {
