@@ -193,11 +193,17 @@ variable "apple" {
 		t.Errorf("expected 4 issues, got %d", len(runner.Issues))
 	}
 
-	if len(runner.Issues) > 0 {
-		expected := "Variable 'environment' is not in alphabetical order"
-		if runner.Issues[0].Message != expected {
-			t.Errorf("expected message %q, got %q", expected, runner.Issues[0].Message)
-		}
+	// Map iteration order is non-deterministic, so check that expected issues exist
+	// rather than asserting on a specific index
+	messages := make(map[string]bool)
+	for _, issue := range runner.Issues {
+		messages[issue.Message] = true
+	}
+	if !messages["Variable 'environment' is not in alphabetical order"] {
+		t.Error("expected issue for 'environment' not in alphabetical order")
+	}
+	if !messages["Variable 'zebra' is not in alphabetical order"] {
+		t.Error("expected issue for 'zebra' not in alphabetical order")
 	}
 
 	// Test case - variables with underscores and numbers (proper alphabetical sorting)
