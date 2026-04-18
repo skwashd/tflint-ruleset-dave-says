@@ -12,7 +12,7 @@ builds:
       - arm64
 
 archives:
-  - format: zip
+  - formats: ["zip"]
     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
 
 checksum:
