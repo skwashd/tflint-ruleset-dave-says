@@ -11,7 +11,7 @@ func main() {
 		RuleSet: &rules.DaveSaysRuleSet{
 			BuiltinRuleSet: tflint.BuiltinRuleSet{
 				Name:    "dave-says",
-				Version: "0.2.4",
+				Version: "0.2.5",
 				Rules: []tflint.Rule{
 					rules.NewDaveAwsPolicyNoJsonencodeRule(),
 					rules.NewDaveCloudwatchLogRetentionRule(),

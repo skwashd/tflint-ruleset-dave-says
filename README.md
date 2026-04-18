@@ -63,7 +63,7 @@ Add to your `.tflint.hcl`:
 ```hcl
 plugin "dave-says" {
   enabled = true
-  version = "0.2.4"
+  version = "0.2.5"
   source  = "github.com/skwashd/tflint-ruleset-dave-says"
 }
 ```
