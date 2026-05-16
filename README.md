@@ -1,49 +1,51 @@
 # TFLint Ruleset: Dave Says
 
-A TFLint plugin that enforces custom Terraform coding standards for consistent naming conventions, proper code organization, and best practices.
+A TFLint plugin that enforces custom Terraform coding standards: consistent naming conventions, proper code organization, and a set of best-practice rules for AWS resources.
 
 ## Rules
 
-### Label Rules
-* **[dave_label_min_length](docs/rules/dave_label_min_length.md):** Enforce minimum length for labels
-* **[dave_label_no_type_substring](docs/rules/dave_label_no_type_substring.md):** Avoid redundant information in label values
-* **[dave_label_snake](docs/rules/dave_label_snake.md):** Use snake_case for all labels
+### Naming
 
-### Resource Name Rules
-* **[dave_resource_name_kebab](docs/rules/dave_resource_name_kebab.md):** Use kebab-case for all names
-* **[dave_resource_name_no_type_substring](docs/rules/dave_resource_name_no_type_substring.md):** Avoid redundant information in resource names
+* **[dave_label_min_length](docs/rules/dave_label_min_length.md)** — Enforce minimum length for labels
+* **[dave_label_no_type_substring](docs/rules/dave_label_no_type_substring.md)** — Avoid redundant information in labels
+* **[dave_label_snake](docs/rules/dave_label_snake.md)** — Use snake_case for all labels
+* **[dave_resource_name_kebab](docs/rules/dave_resource_name_kebab.md)** — Use kebab-case for resource `name` arguments
+* **[dave_resource_name_no_type_substring](docs/rules/dave_resource_name_no_type_substring.md)** — Avoid redundant information in resource names
 
-### Variable Rules
-* **[dave_no_vpc_id_variable](docs/rules/dave_no_vpc_id_variable.md):** Do not use `vpc_id` as a variable name
-* **[dave_variable_alphabetical_order](docs/rules/dave_variable_alphabetical_order.md):** Sort variables alphabetically
-* **[dave_variable_has_description](docs/rules/dave_variable_has_description.md):** All variables must have a `description`
-* **[dave_variable_has_type](docs/rules/dave_variable_has_type.md):** All variables must have a `type`
-* **[dave_variable_must_be_in_variables_file](docs/rules/dave_variable_must_be_in_variables_file.md):** Only allow variables in `variables.tf`
-* **[dave_variable_region](docs/rules/dave_variable_region.md):** Do not use `region` as a variable name
+### Variables and Outputs
 
-### File Organization Rules
-* **[dave_output_must_be_in_outputs_file](docs/rules/dave_output_must_be_in_outputs_file.md):** Only allow outputs in `outputs.tf`
+* **[dave_variable_alphabetical_order](docs/rules/dave_variable_alphabetical_order.md)** — Sort variables alphabetically
+* **[dave_variable_has_description](docs/rules/dave_variable_has_description.md)** — Require a description on every variable
+* **[dave_variable_has_type](docs/rules/dave_variable_has_type.md)** — Require an explicit type on every variable
+* **[dave_variable_must_be_in_variables_file](docs/rules/dave_variable_must_be_in_variables_file.md)** — Only allow `variable` blocks in `variables.tf`
+* **[dave_variable_region](docs/rules/dave_variable_region.md)** — Disallow `region` as a variable
+* **[dave_output_must_be_in_outputs_file](docs/rules/dave_output_must_be_in_outputs_file.md)** — Only allow `output` blocks in `outputs.tf`
 
-### AWS IAM Rules
-* **[dave_aws_policy_no_jsonencode](docs/rules/dave_aws_policy_no_jsonencode.md):** Ensure policies use `aws_iam_policy_document` data sources
-* **[dave_iam_no_inline_policy](docs/rules/dave_iam_no_inline_policy.md):** Use managed policies instead of inline policies
+### IAM
 
-### AWS S3 Rules
-* **[dave_s3_bucket_namespace](docs/rules/dave_s3_bucket_namespace.md):** S3 buckets must use account-regional namespace
-* **[dave_s3_no_inline_config](docs/rules/dave_s3_no_inline_config.md):** Do not use deprecated inline S3 configuration blocks
-* **[dave_s3_no_public_acl](docs/rules/dave_s3_no_public_acl.md):** S3 bucket ACLs must not allow public access
+* **[dave_aws_policy_no_jsonencode](docs/rules/dave_aws_policy_no_jsonencode.md)** — Require `aws_iam_policy_document` instead of `jsonencode()`
+* **[dave_iam_no_inline_policy](docs/rules/dave_iam_no_inline_policy.md)** — Disallow inline IAM policy resources
 
-### AWS CloudWatch Rules
-* **[dave_cloudwatch_log_retention](docs/rules/dave_cloudwatch_log_retention.md):** CloudWatch log groups must set `retention_in_days`
+### S3
 
-### AWS VPC Rules
-* **[dave_security_group_no_inline_rules](docs/rules/dave_security_group_no_inline_rules.md):** Do not use inline `ingress`/`egress` blocks on security groups
+* **[dave_s3_bucket_namespace](docs/rules/dave_s3_bucket_namespace.md)** — Require `bucket_namespace = "account-regional"`
+* **[dave_s3_no_inline_config](docs/rules/dave_s3_no_inline_config.md)** — Disallow deprecated inline S3 bucket configuration (ERROR)
+* **[dave_s3_no_public_acl](docs/rules/dave_s3_no_public_acl.md)** — Disallow public S3 bucket ACLs (ERROR, autofixable)
+
+### CloudWatch
+
+* **[dave_cloudwatch_log_retention](docs/rules/dave_cloudwatch_log_retention.md)** — Require a configured retention on log groups (autofixable, configurable)
+
+### VPC and Security Groups
+
+* **[dave_no_vpc_id_variable](docs/rules/dave_no_vpc_id_variable.md)** — Disallow `vpc_id` as a variable
+* **[dave_security_group_no_inline_rules](docs/rules/dave_security_group_no_inline_rules.md)** — Disallow inline `ingress`/`egress` blocks on `aws_security_group`
 
 ## Installation
 
 ### Building from Source
 
-```bash
+```sh
 git clone https://github.com/skwashd/tflint-ruleset-dave-says.git
 cd tflint-ruleset-dave-says
 go build -o tflint-ruleset-dave-says
@@ -51,7 +53,7 @@ go build -o tflint-ruleset-dave-says
 
 ### Installing the Plugin
 
-```bash
+```sh
 mkdir -p ~/.tflint.d/plugins
 cp tflint-ruleset-dave-says ~/.tflint.d/plugins/
 ```
@@ -68,14 +70,16 @@ plugin "dave-says" {
 }
 ```
 
+Run `tflint --init` to download and verify the plugin.
+
 ### Disabling Individual Rules
 
 ```hcl
-rule "dave_cloudwatch_log_retention" {
+rule "dave_label_min_length" {
   enabled = false
 }
 
-rule "dave_s3_bucket_namespace" {
+rule "dave_variable_alphabetical_order" {
   enabled = false
 }
 ```
@@ -122,18 +126,18 @@ Some rules target features that require minimum provider versions:
 
 ### Requirements
 
-- Go 1.23 or newer
-- TFLint v0.59.0 or newer
+* Go 1.26 or newer
+* TFLint v0.59.0 or newer
 
 ### Building
 
-```bash
+```sh
 go build -o tflint-ruleset-dave-says
 ```
 
 ### Testing
 
-```bash
+```sh
 go test ./rules/... -v
 ```
 
