@@ -6,40 +6,40 @@ A TFLint plugin that enforces custom Terraform coding standards: consistent nami
 
 ### Naming
 
-* **[dave_label_min_length](docs/rules/dave_label_min_length.md)** — Enforce minimum length for labels
-* **[dave_label_no_type_substring](docs/rules/dave_label_no_type_substring.md)** — Avoid redundant information in labels
-* **[dave_label_snake](docs/rules/dave_label_snake.md)** — Use snake_case for all labels
-* **[dave_resource_name_kebab](docs/rules/dave_resource_name_kebab.md)** — Use kebab-case for resource `name` arguments
-* **[dave_resource_name_no_type_substring](docs/rules/dave_resource_name_no_type_substring.md)** — Avoid redundant information in resource names
+* **[dave_label_min_length](docs/rules/dave_label_min_length.md):** Enforce minimum length for labels
+* **[dave_label_no_type_substring](docs/rules/dave_label_no_type_substring.md):** Avoid redundant information in labels
+* **[dave_label_snake](docs/rules/dave_label_snake.md):** Use snake_case for all labels
+* **[dave_resource_name_kebab](docs/rules/dave_resource_name_kebab.md):** Use kebab-case for resource `name` arguments
+* **[dave_resource_name_no_type_substring](docs/rules/dave_resource_name_no_type_substring.md):** Avoid redundant information in resource names
 
 ### Variables and Outputs
 
-* **[dave_variable_alphabetical_order](docs/rules/dave_variable_alphabetical_order.md)** — Sort variables alphabetically
-* **[dave_variable_has_description](docs/rules/dave_variable_has_description.md)** — Require a description on every variable
-* **[dave_variable_has_type](docs/rules/dave_variable_has_type.md)** — Require an explicit type on every variable
-* **[dave_variable_must_be_in_variables_file](docs/rules/dave_variable_must_be_in_variables_file.md)** — Only allow `variable` blocks in `variables.tf`
-* **[dave_variable_region](docs/rules/dave_variable_region.md)** — Disallow `region` as a variable
-* **[dave_output_must_be_in_outputs_file](docs/rules/dave_output_must_be_in_outputs_file.md)** — Only allow `output` blocks in `outputs.tf`
+* **[dave_variable_alphabetical_order](docs/rules/dave_variable_alphabetical_order.md):** Sort variables alphabetically
+* **[dave_variable_has_description](docs/rules/dave_variable_has_description.md):** Require a description on every variable
+* **[dave_variable_has_type](docs/rules/dave_variable_has_type.md):** Require an explicit type on every variable
+* **[dave_variable_must_be_in_variables_file](docs/rules/dave_variable_must_be_in_variables_file.md):** Only allow `variable` blocks in `variables.tf`
+* **[dave_variable_region](docs/rules/dave_variable_region.md):** Disallow `region` as a variable
+* **[dave_output_must_be_in_outputs_file](docs/rules/dave_output_must_be_in_outputs_file.md):** Only allow `output` blocks in `outputs.tf`
 
 ### IAM
 
-* **[dave_aws_policy_no_jsonencode](docs/rules/dave_aws_policy_no_jsonencode.md)** — Require `aws_iam_policy_document` instead of `jsonencode()`
-* **[dave_iam_no_inline_policy](docs/rules/dave_iam_no_inline_policy.md)** — Disallow inline IAM policy resources
+* **[dave_aws_policy_no_jsonencode](docs/rules/dave_aws_policy_no_jsonencode.md):** Require `aws_iam_policy_document` instead of `jsonencode()`
+* **[dave_iam_no_inline_policy](docs/rules/dave_iam_no_inline_policy.md):** Disallow inline IAM policy resources
 
 ### S3
 
-* **[dave_s3_bucket_namespace](docs/rules/dave_s3_bucket_namespace.md)** — Require `bucket_namespace = "account-regional"`
-* **[dave_s3_no_inline_config](docs/rules/dave_s3_no_inline_config.md)** — Disallow deprecated inline S3 bucket configuration (ERROR)
-* **[dave_s3_no_public_acl](docs/rules/dave_s3_no_public_acl.md)** — Disallow public S3 bucket ACLs (ERROR, autofixable)
+* **[dave_s3_bucket_namespace](docs/rules/dave_s3_bucket_namespace.md):** Require `bucket_namespace = "account-regional"`
+* **[dave_s3_no_inline_config](docs/rules/dave_s3_no_inline_config.md):** Disallow deprecated inline S3 bucket configuration (ERROR)
+* **[dave_s3_no_public_acl](docs/rules/dave_s3_no_public_acl.md):** Disallow public S3 bucket ACLs (ERROR, autofixable)
 
 ### CloudWatch
 
-* **[dave_cloudwatch_log_retention](docs/rules/dave_cloudwatch_log_retention.md)** — Require a configured retention on log groups (autofixable, configurable)
+* **[dave_cloudwatch_log_retention](docs/rules/dave_cloudwatch_log_retention.md):** Require a configured retention on log groups (autofixable, configurable)
 
 ### VPC and Security Groups
 
-* **[dave_no_vpc_id_variable](docs/rules/dave_no_vpc_id_variable.md)** — Disallow `vpc_id` as a variable
-* **[dave_security_group_no_inline_rules](docs/rules/dave_security_group_no_inline_rules.md)** — Disallow inline `ingress`/`egress` blocks on `aws_security_group`
+* **[dave_no_vpc_id_variable](docs/rules/dave_no_vpc_id_variable.md):** Disallow `vpc_id` as a variable
+* **[dave_security_group_no_inline_rules](docs/rules/dave_security_group_no_inline_rules.md):** Disallow inline `ingress`/`egress` blocks on `aws_security_group`
 
 ## Installation
 
@@ -65,7 +65,7 @@ Add to your `.tflint.hcl`:
 ```hcl
 plugin "dave-says" {
   enabled = true
-  version = "0.2.5"
+  version = "0.3.0"
   source  = "github.com/skwashd/tflint-ruleset-dave-says"
 }
 ```
