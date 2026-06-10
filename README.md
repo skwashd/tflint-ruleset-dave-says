@@ -21,6 +21,10 @@ A TFLint plugin that enforces custom Terraform coding standards: consistent nami
 * **[dave_variable_region](docs/rules/dave_variable_region.md):** Disallow `region` as a variable
 * **[dave_output_must_be_in_outputs_file](docs/rules/dave_output_must_be_in_outputs_file.md):** Only allow `output` blocks in `outputs.tf`
 
+### Lists
+
+* **[dave_list_alphabetical_order](docs/rules/dave_list_alphabetical_order.md):** Sort list elements alphabetically for configured attributes (autofixable, configurable)
+
 ### IAM
 
 * **[dave_aws_policy_no_jsonencode](docs/rules/dave_aws_policy_no_jsonencode.md):** Require `aws_iam_policy_document` instead of `jsonencode()`
@@ -98,6 +102,8 @@ rule "dave_cloudwatch_log_retention" {
 | Rule | Option | Type | Default | Description |
 |------|--------|------|---------|-------------|
 | `dave_cloudwatch_log_retention` | `retention_days` | int | `30` | Expected `retention_in_days` value |
+| `dave_list_alphabetical_order` | `attributes` | list(string) | `[]` | Attribute names whose list values must be sorted (no-op if empty) |
+| `dave_list_alphabetical_order` | `case_insensitive` | bool | `false` | Compare case-insensitively instead of byte order |
 
 ## Autofix
 
@@ -106,6 +112,7 @@ Some rules support `tflint --fix` to automatically correct issues:
 | Rule | Fix action |
 |------|-----------|
 | `dave_cloudwatch_log_retention` | Replaces wrong `retention_in_days` value with the configured expected value |
+| `dave_list_alphabetical_order` | Reorders elements of an unsorted single-line list (multiline lists and lists with comments are flagged but not fixed) |
 | `dave_s3_no_public_acl` | Replaces public ACL (`public-read`, `public-read-write`, `authenticated-read`) with `"private"` |
 
 Autofix only applies when the attribute exists but has the wrong value. Missing attributes are flagged but not auto-fixed to avoid guessing indentation and placement.
