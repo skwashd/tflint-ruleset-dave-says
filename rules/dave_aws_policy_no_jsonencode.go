@@ -39,7 +39,7 @@ func (r *DaveAwsPolicyNoJsonencodeRule) Check(runner tflint.Runner) error {
 	for _, block := range content.Blocks {
 		if len(block.Labels) >= 2 {
 			resourceType := block.Labels[0]
-			
+
 			// Only check AWS resources
 			if !strings.HasPrefix(resourceType, "aws_") {
 				continue

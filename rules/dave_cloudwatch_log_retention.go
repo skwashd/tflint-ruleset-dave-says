@@ -16,7 +16,7 @@ type DaveCloudwatchLogRetentionRule struct {
 
 func NewDaveCloudwatchLogRetentionRule() *DaveCloudwatchLogRetentionRule {
 	return &DaveCloudwatchLogRetentionRule{
-		BaseRule:       BaseRule{ruleName: "dave_cloudwatch_log_retention"},
+		BaseRule:      BaseRule{ruleName: "dave_cloudwatch_log_retention"},
 		RetentionDays: 30,
 	}
 }

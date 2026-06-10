@@ -36,7 +36,7 @@ func (r *DaveVariableMustBeInVariablesFileRule) Check(runner tflint.Runner) erro
 		if len(block.Labels) >= 1 {
 			varName := block.Labels[0]
 			filename := filepath.Base(block.DefRange.Filename)
-			
+
 			if filename != "variables.tf" {
 				err := EmitIssue(runner, r, fmt.Sprintf("Variable '%s' must be declared in variables.tf, not in %s", varName, filename), block.DefRange)
 				if err != nil {
