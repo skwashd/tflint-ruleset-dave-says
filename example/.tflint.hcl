@@ -8,3 +8,9 @@ rule "dave_cloudwatch_log_retention" {
   enabled        = true
   retention_days = 30
 }
+
+rule "dave_list_alphabetical_order" {
+  enabled          = true
+  attributes       = ["tags", "subnet_ids"]
+  case_insensitive = false
+}

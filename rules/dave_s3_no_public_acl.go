@@ -28,8 +28,8 @@ func (r *DaveS3NoPublicAclRule) Link() string {
 }
 
 var publicACLs = map[string]bool{
-	"public-read":       true,
-	"public-read-write": true,
+	"public-read":        true,
+	"public-read-write":  true,
 	"authenticated-read": true,
 }
 

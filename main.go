@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/skwashd/tflint-ruleset-dave-says/rules"
 	"github.com/terraform-linters/tflint-plugin-sdk/plugin"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
-	"github.com/skwashd/tflint-ruleset-dave-says/rules"
 )
 
 func main() {
@@ -19,6 +19,7 @@ func main() {
 					rules.NewDaveLabelMinLengthRule(),
 					rules.NewDaveLabelNoTypeSubstringRule(),
 					rules.NewDaveLabelSnakeRule(),
+					rules.NewDaveListAlphabeticalOrderRule(),
 					rules.NewDaveNoVpcIdVariableRule(),
 					rules.NewDaveOutputMustBeInOutputsFileRule(),
 					rules.NewDaveResourceNameKebabRule(),

@@ -75,7 +75,7 @@ func (r *DaveResourceNameNoTypeSubstringRule) checkNameAttribute(runner tflint.R
 		return nil
 	}
 
-	nameWords := SplitWordsOnDash(nameValue)  // Names only have dashes
+	nameWords := SplitWordsOnDash(nameValue) // Names only have dashes
 	if found, word := ContainsAnyWord(nameWords, typeWords); found {
 		return EmitIssue(runner, r, fmt.Sprintf("Resource %s attribute '%s' contains substring '%s' from resource type '%s'", attrName, nameValue, word, resourceType), attr.Range)
 	}
