@@ -2,9 +2,6 @@ package rules
 
 import (
 	"fmt"
-	"math/big"
-
-	"github.com/zclconf/go-cty/cty"
 
 	"github.com/terraform-linters/tflint-plugin-sdk/hclext"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
@@ -28,38 +25,15 @@ func (r *DaveCloudwatchLogRetentionRule) Link() string {
 	return "https://github.com/skwashd/tflint-ruleset-dave-says/blob/main/docs/rules/dave_cloudwatch_log_retention.md"
 }
 
-// ApplyRuleConfig decodes per-rule configuration from .tflint.hcl.
-//
-//	rule "dave_cloudwatch_log_retention" {
-//	  enabled        = true
-//	  retention_days = 14
-//	}
-func (r *DaveCloudwatchLogRetentionRule) ApplyRuleConfig(body *hclext.BodyContent) error {
-	attr, exists := body.Attributes["retention_days"]
-	if !exists {
-		return nil
-	}
-
-	val, diags := attr.Expr.Value(nil)
-	if diags.HasErrors() {
-		return fmt.Errorf("evaluating retention_days: %s", diags.Error())
-	}
-
-	if val.Type() != cty.Number {
-		return fmt.Errorf("retention_days must be a number, got %s", val.Type().FriendlyName())
-	}
-
-	bf := val.AsBigFloat()
-	i, accuracy := bf.Int64()
-	if accuracy != big.Exact {
-		return fmt.Errorf("retention_days must be an exact integer")
-	}
-
-	r.RetentionDays = int(i)
-	return nil
-}
-
 func (r *DaveCloudwatchLogRetentionRule) Check(runner tflint.Runner) error {
+	cfg := struct {
+		RetentionDays int `hclext:"retention_days,optional"`
+	}{RetentionDays: r.RetentionDays}
+	if err := runner.DecodeRuleConfig(r.Name(), &cfg); err != nil {
+		return err
+	}
+	expected := cfg.RetentionDays
+
 	resources, err := runner.GetResourceContent("aws_cloudwatch_log_group", &hclext.BodySchema{
 		Attributes: []hclext.AttributeSchema{
 			{Name: "retention_in_days"},
@@ -73,7 +47,7 @@ func (r *DaveCloudwatchLogRetentionRule) Check(runner tflint.Runner) error {
 		attr, exists := resource.Body.Attributes["retention_in_days"]
 		if !exists {
 			if err := runner.EmitIssue(r,
-				fmt.Sprintf("CloudWatch log group is missing retention_in_days. Set retention_in_days = %d.", r.RetentionDays),
+				fmt.Sprintf("CloudWatch log group is missing retention_in_days. Set retention_in_days = %d.", expected),
 				resource.DefRange,
 			); err != nil {
 				return err
@@ -86,8 +60,7 @@ func (r *DaveCloudwatchLogRetentionRule) Check(runner tflint.Runner) error {
 			continue
 		}
 
-		if retention != r.RetentionDays {
-			expected := r.RetentionDays
+		if retention != expected {
 			if err := runner.EmitIssueWithFix(r,
 				fmt.Sprintf("CloudWatch log group retention_in_days is %d, expected %d.", retention, expected),
 				attr.Expr.Range(),
