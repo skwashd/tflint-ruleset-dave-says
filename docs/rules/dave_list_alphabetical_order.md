@@ -44,6 +44,8 @@ Warning: [Fixed] List assigned to 'tags' is not sorted alphabetically. (dave_lis
    2:   tags = ["b", "a", "c"]
 ```
 
+For multiline lists, run `LC_ALL=C sort` to sort the elements alphabetically.
+
 ## Examples
 
 Assuming `attributes = ["tags"]`:
