@@ -25,6 +25,10 @@ A TFLint plugin that enforces custom Terraform coding standards: consistent nami
 
 * **[dave_list_alphabetical_order](docs/rules/dave_list_alphabetical_order.md):** Sort list elements alphabetically for configured attributes (autofixable, configurable)
 
+### Tags
+
+* **[dave_name_tag_matches_name](docs/rules/dave_name_tag_matches_name.md):** Require the `Name` tag to match the resource's `name` argument (autofixable)
+
 ### IAM
 
 * **[dave_aws_policy_no_jsonencode](docs/rules/dave_aws_policy_no_jsonencode.md):** Require `aws_iam_policy_document` instead of `jsonencode()`
@@ -113,6 +117,7 @@ Some rules support `tflint --fix` to automatically correct issues:
 |------|-----------|
 | `dave_cloudwatch_log_retention` | Replaces wrong `retention_in_days` value with the configured expected value |
 | `dave_list_alphabetical_order` | Reorders elements of an unsorted single-line list (multiline lists and lists with comments are flagged but not fixed) |
+| `dave_name_tag_matches_name` | Replaces a literal `Name` tag value with the `name` attribute's source text (not fixed when the `Name` entry can't be precisely located, e.g. `tags = var.tags`) |
 | `dave_s3_no_public_acl` | Replaces public ACL (`public-read`, `public-read-write`, `authenticated-read`) with `"private"` |
 
 Autofix only applies when the attribute exists but has the wrong value. Missing attributes are flagged but not auto-fixed to avoid guessing indentation and placement.

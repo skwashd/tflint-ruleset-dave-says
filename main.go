@@ -20,6 +20,7 @@ func main() {
 					rules.NewDaveLabelNoTypeSubstringRule(),
 					rules.NewDaveLabelSnakeRule(),
 					rules.NewDaveListAlphabeticalOrderRule(),
+					rules.NewDaveNameTagMatchesNameRule(),
 					rules.NewDaveNoVpcIdVariableRule(),
 					rules.NewDaveOutputMustBeInOutputsFileRule(),
 					rules.NewDaveResourceNameKebabRule(),
